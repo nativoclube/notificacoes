@@ -1,9 +1,7 @@
-<!-- VERSÃO MÓVEL - PWA PILOTO NATIVO CLUBE - CORRIGIDO A4 SEM BOTÕES -->
+<!-- VERSÃO MÓVEL - PWA PILOTO NATIVO CLUBE - CIÊNCIA SÓ NO PDF -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4a5d23">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#4a5d23">
@@ -33,10 +31,37 @@
 
 .section-title { background: #4a5d23; color: white; padding: 10px; margin-top: 15px; border-radius: 4px; font-size: 15px; }
 .alerta { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; border-radius: 4px; margin: 12px 0; font-size: 12px; font-weight: bold; color: #856404; }
-.foto-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.foto-preview img { width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; border-radius: 4px; }
+
+/* FOTOS ALTURA FIXA */
+.foto-preview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 10px;
+}
+.foto-preview img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border: 2px solid #4a5d23;
+    border-radius: 6px;
+}
+
+/* AVISO SÓ APARECE NA TELA */
+.aviso-foto {
+    font-size: 12px;
+    color: #d9534f;
+    font-weight: bold;
+    text-align: center;
+    margin: 5px 0 10px 0;
+    padding: 6px;
+    background: #fff3cd;
+    border: 1px dashed #d9534f;
+    border-radius: 4px;
+}
 
 .ciencia { border: 1px solid #ccc; padding: 12px; border-radius: 4px; margin-top: 12px; }
+
 .assinaturas { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; }
 .assinatura-campo { border-top: 1px solid #000; padding-top: 5px; font-size: 12px; margin-top: 20px; }
 
@@ -58,9 +83,9 @@
     #statusMsg { text-align: center; margin-top: 15px; font-weight: bold; }
 
     @media print {
-  .tabs,.botoes, input[type="file"], #statusMsg, button { display: none!important; }
+.tabs,.botoes, input[type="file"], #statusMsg, button,.aviso-foto { display: none!important; }
         body { background: white; padding: 0; margin: 0; }
-  .container { box-shadow: none; padding: 20px; width: 210mm; }
+.container { box-shadow: none; padding: 20px; width: 210mm; }
     input, select, textarea { border: none; background: transparent; padding: 0; font-size: 12px; }
     }
 </style>
@@ -121,29 +146,31 @@
                 <option value="Perturbação do Sossego - Som - Máquina - Latidos">Perturbação do Sossego - Som - Máquina - Latidos</option>
                 <option value="Veiculo estacionado de forma irregular">Veiculo estacionado de forma irregular</option>
                 <option value="Deposição dejetos de animais em área comum">Deposição dejetos de animais em área comum</option>
-		<option value="Outros">Outros</option>
+		        <option value="Outros">Outros</option>
             </select>
 
             <label>Descrição Detalhada da Ocorrência:</label>
             <textarea id="descricao" placeholder="Descreva o que aconteceu, local exato..." required></textarea>
 
-            <div id="areaFotos">
-                <label>Fotos da Ocorrência:</label>
-                <input type="file" id="fotosGaleria" multiple accept="image/*" style="display:none;">
-                <input type="file" id="fotosCamera" accept="image/*" capture="environment" style="display:none;">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="botoesAnexo">
-                    <button type="button" class="btn-foto" onclick="document.getElementById('fotosCamera').click()">📷 Tirar Foto</button>
-                    <button type="button" onclick="document.getElementById('fotosGaleria').click()">🖼️ Galeria</button>
-                </div>
-                <div class="foto-preview" id="previewFotos"></div>
+            <label>Fotos da Ocorrência:</label>
+            <input type="file" id="fotosGaleria" multiple accept="image/*" style="display:none;">
+            <input type="file" id="fotosCamera" accept="image/*" capture="environment" style="display:none;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="botoesAnexo">
+                <button type="button" class="btn-foto" onclick="document.getElementById('fotosCamera').click()">📷 Tirar Foto</button>
+                <button type="button" onclick="document.getElementById('fotosGaleria').click()">🖼️ Galeria</button>
             </div>
 
-            <div class="ciencia">
+            <p class="aviso-foto" id="avisoFoto">📱 Registrar foto com celular deitado (Paisagem)</p>
+
+            <div class="foto-preview" id="previewFotos"></div>
+
+            <!-- BLOCO CIÊNCIA -->
+            <div class="ciencia" id="blocoCiencia">
                 <p><strong>CIÊNCIA DO MORADOR</strong></p>
                 <p>Declaro estar ciente desta notificação.</p>
                 <div class="assinaturas">
                     <div><label>Nome:</label><input type="text" id="nomeCiencia"></div>
-                    <div><label>Data:</label><input type="text" id=""></div>
+                    <div><label>Data:</label><input type="text" id="dataCiencia"></div>
                     <div class="assinatura-campo">Assinatura</div>
                 </div>
             </div>
@@ -183,7 +210,7 @@
 <script>
     const GITHUB_USER = "nativoclube";
     const GITHUB_REPO = "notificacoes";
-    const GITHUB_TOKEN = "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"; // GERE UM NOVO TOKEN
+    const GITHUB_TOKEN = "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"; // GERE UM NOVO TOKEN
 
     function abrirAba(aba) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -204,7 +231,11 @@
 
     const hoje = new Date().toISOString().split('T')[0];
     document.getElementById('dataDoc').value = new Date().toLocaleString('pt-BR');
-    document.getElementById('dataCiencia').value = formatarData(hoje);
+    // DATA CIENCIA FICA VAZIA
+    document.getElementById('dataCiencia').value = '';
+
+    // ESCONDE CIÊNCIA AO CARREGAR A PÁGINA
+    document.getElementById('blocoCiencia').style.display = 'none';
 
     function previewArquivos(input){
         [...input.files].forEach(file => {
@@ -225,11 +256,15 @@
 
         btn.disabled = true; status.innerText = "Gerando PDF...";
 
-        // ESCONDE TUDO QUE NÃO VAI NO PDF
+        // 1. MOSTRA A CIÊNCIA SÓ PRA CAPTURAR NO PDF
+        document.getElementById('blocoCiencia').style.display = 'block';
+
+        // 2. ESCONDE TUDO QUE NÃO VAI NO PDF
         const elementosEsconder = [
-            document.getElementById('botoesAnexo'), // Botões Tirar Foto e Galeria
-            document.getElementById('botoesAcao'), // Botões Imprimir e Salvar
-            document.querySelector('.tabs') // Abas
+            document.getElementById('botoesAnexo'),
+            document.getElementById('botoesAcao'),
+            document.querySelector('.tabs'),
+            document.getElementById('avisoFoto')
         ];
         elementosEsconder.forEach(el => { if(el) el.style.display = 'none'; });
 
@@ -238,14 +273,23 @@
         campoDataOcorrencia.type = 'text';
         campoDataOcorrencia.value = formatarData(dataOcorrencia);
 
-        await new Promise(r => setTimeout(r, 300)); // Espera renderizar
+        // ESPERA TODAS AS IMAGENS CARREGAREM
+        const element = document.getElementById('formParaPDF');
+        const images = element.querySelectorAll('img');
+        await Promise.all([...images].map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => { img.onload = img.onerror = resolve; });
+        }));
+
+        await new Promise(r => setTimeout(r, 300));
 
         const { jsPDF } = window.jspdf;
-        const element = document.getElementById('formParaPDF');
 
         const canvas = await html2canvas(element, {
             scale: 2.5,
             useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
             width: 794,
             windowWidth: 794
         });
@@ -254,9 +298,9 @@
         const imgData = canvas.toDataURL('image/png');
         doc.addImage(imgData, 'PNG', 0, 0, 210, 297);
 
-        // MOSTRA TUDO DE VOLTA
+        // 3. VOLTA TUDO AO NORMAL DA TELA
         elementosEsconder.forEach(el => { if(el) el.style.display = ''; });
-
+        document.getElementById('blocoCiencia').style.display = 'none'; // ESCONDE CIÊNCIA DE NOVO
         campoDataOcorrencia.type = tipoOriginal;
         campoDataOcorrencia.value = dataOcorrencia;
 
@@ -333,13 +377,6 @@
             else { throw new Error(await response.text()); }
         } catch(e){ status.style.color = "red"; status.innerText = "Erro ao apagar: " + e.message; }
     }
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js');
-  });
-}
 </script>
 </body>
 </html>
